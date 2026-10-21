@@ -3,9 +3,7 @@
 Not in v1 scope. In order of priority.
 
 ## Next
-1. **Family access without login**, in two steps:
-   - Open site hidden from search engines: `robots: noindex` is already set. Add a read-only `select` grant and policy for `anon` on `recipes`, and let the proxy allow reading pages without a login. Editing, the Add page and export stay behind the login.
-   - Per-recipe share links: add a nullable `share_token` column and a `/s/[token]` page that reads that one recipe.
+1. Done 21/10/2026: **family access without login** (read-only open site, `noindex`). Per-recipe share links are no longer needed while the whole site is readable; revisit only if the site goes private again.
 2. **Shopping list**: pick one or more recipes and get one merged list to tick off, with ticks saved in the browser (no new table). Merge items by normalised `name` + `unit`, adding up `quantity` or `metric.amount`. Ingredients are already stored structured for this.
 3. **Monthly backup reminder**: press "Λήψη αντιγράφου (JSON)" on the 1st of each month and keep the file somewhere safe. Later option: an automatic scheduled export, e.g. the daily cron emailing the file monthly.
 

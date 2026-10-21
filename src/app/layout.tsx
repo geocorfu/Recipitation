@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getEditor } from "@/lib/session";
 import { signOut } from "./actions";
 import "./globals.css";
 
@@ -18,20 +18,17 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const editor = await getEditor();
 
   return (
     <html lang="el">
       <body>
-        {user && (
-          <header className="topbar">
-            <div className="wrap">
-              <Link href="/" className="brand">
-                🍲 Recipitation
-              </Link>
+        <header className="topbar">
+          <div className="wrap">
+            <Link href="/" className="brand">
+              🍲 Recipitation
+            </Link>
+            {editor ? (
               <nav className="nav">
                 <Link href="/recipes/new" className="btn primary small">
                   + Νέα
@@ -42,9 +39,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   </button>
                 </form>
               </nav>
-            </div>
-          </header>
-        )}
+            ) : (
+              <nav className="nav">
+                <Link href="/login" className="btn small">
+                  Σύνδεση
+                </Link>
+              </nav>
+            )}
+          </div>
+        </header>
         <main className="wrap">{children}</main>
       </body>
     </html>

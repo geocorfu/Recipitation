@@ -3,17 +3,19 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getEditor } from "@/lib/session";
 import { MAX_RECIPES_PER_PASTE, normalizeRecipe, toRow, validId } from "@/lib/recipe";
 import type { PastedRecipe } from "@/lib/types";
 
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/login");
+  redirect("/");
 }
 
 /** Titles of the recipes these ids already belong to, so the preview can say what gets replaced. */
 export async function findExisting(ids: string[]): Promise<Record<string, string>> {
+  if (!(await getEditor())) return {};
   const valid = (Array.isArray(ids) ? ids : []).map(validId).filter((id): id is string => !!id);
   if (valid.length === 0) return {};
   const supabase = await createClient();
@@ -27,6 +29,7 @@ export async function findExisting(ids: string[]): Promise<Record<string, string
  * Server actions are public endpoints, so everything is cleaned again here.
  */
 export async function saveRecipes(input: unknown[]): Promise<{ ids?: string[]; error?: string }> {
+  if (!(await getEditor())) return { error: "Χρειάζεται σύνδεση." };
   if (!Array.isArray(input) || input.length === 0) return { error: "Δεν υπάρχει τίποτα για αποθήκευση." };
   if (input.length > MAX_RECIPES_PER_PASTE) return { error: "Πάρα πολλές συνταγές με τη μία." };
 
@@ -62,6 +65,7 @@ export async function saveRecipes(input: unknown[]): Promise<{ ids?: string[]; e
 export async function deleteRecipe(id: string) {
   const valid = validId(id);
   if (!valid) throw new Error("Invalid recipe");
+  if (!(await getEditor())) throw new Error("Not signed in");
   const supabase = await createClient();
   const { error } = await supabase.from("recipes").delete().eq("id", valid);
   if (error) throw new Error(error.message);

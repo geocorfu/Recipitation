@@ -1,12 +1,14 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
+import { getEditor } from "@/lib/session";
 import { RecipeList } from "@/components/RecipeList";
 import type { RecipeSummary } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const supabase = await createClient();
-  const { data, error } = await supabase
+  // Visitors read too, so reads go through the server-only service client; anon has no table access.
+  const editor = await getEditor();
+  const { data, error } = await createServiceClient()
     .from("recipes")
     .select("id, title, category, from_person, prep_minutes, cook_minutes, image_url, search_text")
     .order("title");
@@ -24,7 +26,7 @@ export default async function HomePage() {
     <>
       <h1>Οι συνταγές μας</h1>
       <RecipeList recipes={recipes} />
-      {recipes.length > 0 && (
+      {editor && recipes.length > 0 && (
         <p className="small" style={{ marginTop: 24 }}>
           {/* A plain link, not next/link: this is a file download, not a page. */}
           <a href="/api/export" className="btn small" download>

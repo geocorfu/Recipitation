@@ -58,7 +58,7 @@ export default function LoginPage() {
   return (
     <div style={{ maxWidth: 420, margin: "10vh auto 0" }}>
       <h1>🍲 Recipitation</h1>
-      <p className="muted">Ιδιωτικό. Σύνδεση με το email σου.</p>
+      <p className="muted">Η σύνδεση χρειάζεται μόνο για προσθήκη και διόρθωση συνταγών.</p>
 
       <div className="card">
         {error && <div className="error">{error}</div>}

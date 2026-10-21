@@ -2,7 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isAllowedEmail } from "@/lib/auth";
 
-/** Refreshes the Supabase session and sends signed-out visitors to /login. */
+/**
+ * Refreshes the Supabase session. Visitors may read recipes; adding recipes and the
+ * API (export) need a signed-in family editor.
+ */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -30,10 +33,10 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isPublic = path === "/login" || path.startsWith("/auth/");
+  const isEditorOnly = path === "/recipes/new" || path.startsWith("/api/");
 
   if (!user || !isAllowedEmail(user.email)) {
-    if (isPublic) return response;
+    if (!isEditorOnly) return response;
     // API routes answer with 401 instead of redirecting.
     if (path.startsWith("/api/")) {
       return NextResponse.json({ error: "Not signed in" }, { status: 401 });

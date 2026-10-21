@@ -29,7 +29,7 @@ In Claude Desktop or claude.ai, create a project called "Συνταγές" and p
 - **Metric amounts:** cups, glasses and spoons show grams/ml next to the original line, from argiro.gr's δοσομετρητής. "περίπου" marks Claude's estimates.
 - **Backup:** **Λήψη αντιγράφου (JSON)** at the bottom of the home page downloads every recipe in the paste format. Pasting that file on **+ Νέα** restores it. Free Supabase has no self-service restore, so do this monthly.
 - **Daily job** (`vercel.json`): reads the database every day so the free Supabase project doesn't pause.
-- **Privacy:** every page needs a signed-in user on `ALLOWED_EMAILS`; the site is `noindex`.
+- **Who sees what:** anyone with the address can browse, search and cook (the site is `noindex`, so search engines skip it). Adding, fixing, deleting and the export need a signed-in user on `ALLOWED_EMAILS`. Pages read through the server-only service key, so the public `anon` key still has no table access.
 
 ## Run locally
 ```bash
