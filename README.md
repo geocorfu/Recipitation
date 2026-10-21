@@ -25,6 +25,7 @@ In Claude Desktop or claude.ai, create a project called "Συνταγές" and p
 ## How it works
 - **Add / fix:** paste Claude's reply, check the preview (and Claude's warnings), save. A paste whose `id` matches a saved recipe replaces it after a confirmation; no `id` creates a new one. To fix a recipe: **Αντιγραφή JSON** on its page → give it to Claude with the correction → paste the reply.
 - **Search:** accent- and case-insensitive ("μπριαμ" finds "Μπριάμ"), across title, person, category, tags, ingredients and notes.
+- **Shopping list:** "Στη λίστα αγορών" on a recipe adds it to `/list`, which merges the ingredients of every chosen recipe (same name, accents ignored; kg/l added as g/ml; a gram/ml total when cups and grams mix). Ticks and the chosen recipes are saved in that phone's browser only.
 - **Cooking mode:** keeps the screen on and enlarges the text.
 - **Metric amounts:** cups, glasses and spoons show grams/ml next to the original line, from argiro.gr's δοσομετρητής. "περίπου" marks Claude's estimates.
 - **Backup:** **Λήψη αντιγράφου (JSON)** at the bottom of the home page downloads every recipe in the paste format. Pasting that file on **+ Νέα** restores it. Free Supabase has no self-service restore, so do this monthly.

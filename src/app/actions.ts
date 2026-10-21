@@ -2,10 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getEditor } from "@/lib/session";
 import { MAX_RECIPES_PER_PASTE, normalizeRecipe, toRow, validId } from "@/lib/recipe";
 import type { PastedRecipe } from "@/lib/types";
+import type { ListRecipe } from "@/lib/shopping";
 
 export async function signOut() {
   const supabase = await createClient();
@@ -71,4 +72,13 @@ export async function deleteRecipe(id: string) {
   if (error) throw new Error(error.message);
   revalidatePath("/");
   redirect("/");
+}
+
+/** Ingredients of the recipes on a shopping list. Reading is open to visitors, like the pages. */
+export async function getListRecipes(ids: string[]): Promise<ListRecipe[]> {
+  const valid = (Array.isArray(ids) ? ids : []).slice(0, 50).map(validId).filter((id): id is string => !!id);
+  if (valid.length === 0) return [];
+  const { data } = await createServiceClient().from("recipes").select("id, title, ingredients").in("id", valid);
+  // Keep the order the recipes were added in.
+  return valid.flatMap((id) => (data ?? []).filter((r) => r.id === id)) as ListRecipe[];
 }

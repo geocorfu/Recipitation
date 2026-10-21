@@ -190,3 +190,13 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 .cooking .topbar { position: static; }
 
 .warnings { margin: 0; padding-left: 1.2em; }
+
+/* Shopping list */
+.list-recipe { display: inline-flex; align-items: center; gap: 6px; cursor: default; }
+.list-recipe a { color: inherit; text-decoration: none; }
+.list-recipe button { background: none; border: 0; color: inherit; font: inherit; font-size: 1.1rem; padding: 0 2px; cursor: pointer; }
+.shopping label { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+.shopping input { width: 22px; height: 22px; margin: 2px 0 0; flex: 0 0 auto; accent-color: var(--accent); }
+.shopping .list-from { display: block; }
+.shopping .done { opacity: 0.5; }
+.shopping .done strong { text-decoration: line-through; }

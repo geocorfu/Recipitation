@@ -1,6 +1,7 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { getEditor } from "@/lib/session";
 import { RecipeList } from "@/components/RecipeList";
+import { ListLink } from "@/components/ShoppingButton";
 import type { RecipeSummary } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,7 @@ export default async function HomePage() {
   return (
     <>
       <h1>Οι συνταγές μας</h1>
+      <ListLink />
       <RecipeList recipes={recipes} />
       {editor && recipes.length > 0 && (
         <p className="small" style={{ marginTop: 24 }}>

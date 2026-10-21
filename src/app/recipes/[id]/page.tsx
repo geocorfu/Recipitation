@@ -6,6 +6,7 @@ import { toRecipeJson, validId } from "@/lib/recipe";
 import type { Recipe } from "@/lib/types";
 import { RecipeView } from "@/components/RecipeView";
 import { CookingMode } from "@/components/CookingMode";
+import { ShoppingButton } from "@/components/ShoppingButton";
 import { CopyJsonButton, DeleteRecipeButton } from "@/components/RecipeActions";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,9 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
       </p>
 
       <CookingMode />
+      <div className="row" style={{ marginBottom: 12 }}>
+        <ShoppingButton id={recipe.id} />
+      </div>
       <RecipeView recipe={recipe} />
 
       {editor && (

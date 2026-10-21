@@ -25,3 +25,9 @@ export const UNITS = [
 ] as const;
 
 export const METRIC_LABEL = { g: "γρ.", ml: "ml" } as const;
+
+/** Short Greek labels for the unit codes, as used on the shopping list. */
+export const UNIT_LABEL = {
+  g: "γρ.", kg: "κιλά", ml: "ml", l: "λίτρα", tbsp: "κ.σ.", tsp: "κ.γ.", cup: "φλ.", glass: "ποτ.",
+  pc: "τεμ.", clove: "σκελ.", bunch: "ματσάκι", pinch: "πρέζα", can: "κονσ.", pack: "συσκ.", slice: "φέτες",
+} as const;
