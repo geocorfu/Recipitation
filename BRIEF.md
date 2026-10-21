@@ -26,6 +26,7 @@ A private family recipe site, the smaller sibling of Inventoir. You browse, sear
 | 11 | Greek search: the app fills a `search_text` column on save, normalised to lowercase, accents stripped and ς→σ. The query is normalised the same way. No Postgres extension. |
 | 12 | Backups: a "Λήψη αντιγράφου (JSON)" button behind the login downloads every recipe in the paste schema. The paste box accepts that file's contents to restore. |
 | 13 | Pictures are optional. `image_url` is shown from its remote address with a plain `<img>`, `referrerpolicy="no-referrer"`. If the image fails, the page drops back to the no-picture layout. No uploads in v1. |
+| 14 | Metric equivalents: **Claude fills them in the JSON.** Ingredients measured in φλιτζάνι, νεροπότηρο, κ.σ. or κ.γ. get a `metric` field (`amount`, `g`/`ml`, `estimated`), based on argiro.gr's δοσομετρητής: 1 φλιτζάνι = 250 ml, 1 κ.σ. = 15 ml, 1 κ.γ. = 5 ml, grams per φλιτζάνι for 16 ingredients. For ingredients outside the table, Claude estimates the weight, marks it `estimated: true` and adds a warning. The page shows "1 φλιτζάνι αλεύρι · ≈130 γρ." and labels estimates "περίπου". |
 
 ## JSON schema (what you paste, and what the export contains)
 One recipe, as returned by the Claude project (full rules in `claude-project-instructions.md`):
@@ -42,7 +43,8 @@ One recipe, as returned by the Claude project (full rules in `claude-project-ins
   "prep_minutes": 20,
   "cook_minutes": 60,
   "ingredients": [{ "group": null, "items": [
-    { "quantity": 1, "unit": "kg", "name": "πατάτες", "note": "σε ροδέλες", "text": "1 κιλό πατάτες σε ροδέλες" }
+    { "quantity": 1, "unit": "kg", "name": "πατάτες", "note": "σε ροδέλες", "text": "1 κιλό πατάτες σε ροδέλες", "metric": null },
+    { "quantity": 2, "unit": "tbsp", "name": "ζάχαρη", "note": null, "text": "2 κ.σ. ζάχαρη", "metric": { "amount": 25, "unit": "g", "estimated": false } }
   ]}],
   "steps": [{ "group": null, "items": ["Προθερμαίνουμε τον φούρνο στους 180°C."] }],
   "notes": null,
@@ -56,7 +58,7 @@ One recipe, as returned by the Claude project (full rules in `claude-project-ins
 - Categories: Ορεκτικά, Σαλάτες, Σούπες, Λαδερά, Όσπρια, Ζυμαρικά & Ρύζι, Κρέας, Κοτόπουλο, Ψάρι & Θαλασσινά, Πίτες & Αρτοσκευάσματα, Γλυκά, Σάλτσες & Βάσεις, Ποτά, Άλλο.
 - Export file: `{ "format": "recipitation", "version": 1, "exported_at": "…", "recipes": [ …recipes with their id… ] }`.
 - The paste box accepts a single recipe, a list of recipes, or the export file. It tolerates code fences and text around the JSON, as Inventoir does. For several recipes, the preview shows "N νέες, M αντικαταστάσεις".
-- Every field is cleaned on the server: unknown category becomes "Άλλο", unknown unit becomes null, non-http links become null, lengths are capped. As in Inventoir, nothing from the browser is trusted.
+- Every field is cleaned on the server: unknown category becomes "Άλλο", unknown unit becomes null, a `metric` without a positive amount or with a unit other than g/ml becomes null, non-http links become null, lengths are capped. As in Inventoir, nothing from the browser is trusted.
 
 ## Data model (`supabase/schema.sql`)
 One table, `public.recipes`: `id uuid pk`, `title text not null`, `category text not null`, `tags text[]`, `from_person`, `servings int`, `yield`, `prep_minutes int`, `cook_minutes int`, `ingredients jsonb`, `steps jsonb`, `notes`, `source_url`, `image_url`, `search_text text not null`, `created_at`, `updated_at` (with a trigger that updates it on every change).
@@ -87,6 +89,9 @@ One table, `public.recipes`: `id uuid pk`, `title text not null`, `category text
 - Supabase free plan: 2 active projects per account. Inventoir uses one, Recipitation takes the second.
 - Some cooking sites block other sites from showing their images, or change image addresses. That's handled by the fallback in decision 13.
 - `NEXT_PUBLIC_` values are fixed at build time, so redeploy after changing them. After every push, check that the commit SHA appears on Vercel's Deployments page.
+
+- νεροπότηρο isn't on the Argiro page. The instructions treat it as 250 ml, the same as a φλιτζάνι. Old Greek recipes sometimes mean a smaller glass (~200 ml). Change it in `claude-project-instructions.md` if your family's glass differs.
+- `metric` is stored inside the `ingredients` jsonb, so it needs no extra column. A future shopping list can add up grams/ml with it.
 
 ## Phases
 Scaffold → Supabase setup → local test → Vercel deploy → production smoke test on my phone. Each phase ends with a 3–5 line summary, then a commit and push to `github.com/geocorfu/Recipitation`. I'll ask before every deploy.
