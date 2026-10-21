@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   title: "Recipitation",
   description: "Οι συνταγές της οικογένειας.",
   robots: { index: false, follow: false },
+  // Lets a deploy be checked from the live page: Vercel sets this at runtime.
+  other: { "x-commit": process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local" },
 };
 
 export const viewport: Viewport = {

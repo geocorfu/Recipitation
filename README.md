@@ -10,8 +10,8 @@ A private family recipe site. Browse, search and cook from it on your phone. Rec
 1. Create a free project at supabase.com (the free plan allows 2 active projects).
 2. **SQL Editor** → New query → paste all of `supabase/schema.sql` → Run.
 3. **Authentication → Sign In / Providers**: turn **off** "Allow new users to sign up".
-4. **Authentication → Users → Add user** → your email, tick "Auto confirm".
-5. **Authentication → Email Templates → Magic link**: add the line `Or enter this code: {{ .Token }}` to the body, so you can type the code when the link opens in the wrong browser.
+4. **Authentication → Users → Add user** → your email, any strong password (required by the form, never used: the site signs in by email only), tick "Auto confirm".
+5. Sign-in is by the emailed link, opened in the same browser that asked for it. The typeable code needs `Or enter this code: {{ .Token }}` in the Magic link template, and Supabase only allows editing templates with a custom SMTP sender (see BACKLOG).
 6. **Project Settings → API**: copy the Project URL, the `anon` key and the `service_role` key into `.env.local` (see `.env.example`). Never share or commit the service role key.
 
 ### 2. Claude Desktop project
