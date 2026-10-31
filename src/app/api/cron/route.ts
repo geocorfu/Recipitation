@@ -15,9 +15,9 @@ export async function GET(request: Request) {
   }
 
   const supabase = createServiceClient();
-  const { count, error } = await supabase.from("recipes").select("id", { count: "exact", head: true });
+  const { data, error } = await supabase.from("recipes").select("id");
   if (error) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ ok: true, recipes: count ?? 0 });
+  return NextResponse.json({ ok: true, recipes: data.length });
 }
