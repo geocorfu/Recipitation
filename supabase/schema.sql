@@ -67,3 +67,19 @@ create policy "family can read recipes" on public.recipes
   for select to authenticated using (true);
 create policy "family can write recipes" on public.recipes
   for all to authenticated using (true) with check (true);
+
+-- ---------------------------------------------------------------
+-- Heartbeat: the daily cron writes one row here. A write keeps the
+-- free project from being flagged as inactive (a daily read alone
+-- wasn't enough), and last_run shows when the cron last ran.
+-- Only the cron's service_role can touch it; RLS with no policies
+-- blocks everyone else.
+-- ---------------------------------------------------------------
+create table if not exists public.heartbeat (
+  id              integer primary key default 1 check (id = 1),
+  last_run        timestamptz not null default now(),
+  recipes_checked integer
+);
+alter table public.heartbeat enable row level security;
+revoke all on public.heartbeat from anon, authenticated;
+grant select, insert, update on public.heartbeat to service_role;
